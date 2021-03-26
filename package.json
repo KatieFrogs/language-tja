@@ -1,0 +1,15 @@
+{
+	"name": "language-tja",
+	"main": "./lib/language-tja",
+	"version": "0.0.0",
+	"description": "TJA language syntax for Taiko no Tatsujin charts",
+	"keywords": [
+		"language",
+		"grammar"
+	],
+	"repository": "https://github.com/LoveEevee/language-tja",
+	"license": "public-domain",
+	"engines": {
+		"atom": ">=1.0.0 <2.0.0"
+	}
+}

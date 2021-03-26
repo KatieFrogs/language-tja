@@ -1,0 +1,76 @@
+.language-tja--colored-circles atom-text-editor[data-grammar="source tja"] .syntax--tja{
+	&.syntax--note{
+		position: relative;
+		display: inline-block;
+		width: calc(78 / 96 * 1em);
+		height: calc(78 / 96 * 1em);
+		line-height: calc(78 / 96 * 1em);
+		border-radius: 1em;
+		box-sizing: content-box;
+		text-align: center;
+		vertical-align: middle;
+		color: #000;
+		border: calc(9 / 106 * 1em) solid #f7efe0;
+		box-shadow: -0.05em -0.05em #000, 0.05em -0.05em #000, -0.05em 0.05em #000, 0.05em 0.05em;
+		margin-right: -0.11em;
+		
+		&.syntax--blank{
+			background-color: #222;
+			color: #444;
+			border-color: #555;
+			box-shadow: none;
+			z-index: -1;
+		}
+		&.syntax--don{
+			background-color: #f34728;
+		}
+		&.syntax--ka{
+			background-color: #6c8bff;
+		}
+		&.syntax--balloon{
+			background-color: #f87700;
+		}
+		&.syntax--drumroll,
+		&.syntax--drumroll-end{
+			background-color: #f3b500;
+		}
+	}
+	
+	&.syntax--meta.syntax--gogotime{
+		background-color: rgba(238, 238, 238, 0.16);
+	}
+}
+
+.language-tja--align atom-text-editor[data-grammar="source tja"] .syntax--tja{
+	.syntax--notation{
+		display: inline-flex;
+		width: var(--language-tja--alignment-size, 17);
+		justify-content: space-between;
+		vertical-align: bottom;
+		.syntax--note{
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			margin: auto;
+		}
+		.syntax--grow{
+			position: relative;
+			flex-grow: 10;
+		}
+		.syntax--measure{
+			position: relative;
+			z-index: 1;
+		}
+	}
+	.syntax--notation-outer{
+		white-space: nowrap;
+	}
+}
+
+.language-tja--colored-circles.language-tja--light-theme atom-text-editor[data-grammar="source tja"] .syntax--tja{
+	&.syntax--blank{
+		background-color: #fff;
+		color: #ccc;
+		border-color: #ddd;
+	}
+}

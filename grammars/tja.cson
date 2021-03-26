@@ -1,0 +1,406 @@
+scopeName: "source.tja"
+name: "TJA Chart"
+fileTypes: ["tja"]
+patterns: [
+	include: "#comment"
+,
+	# Metadata with float value
+	begin: "^(BPM|OFFSET|DEMOSTART|SONGVOL|SEVOL|HEADSCROLL|MOVIEOFFSET)(:)"
+	end: "^"
+	beginCaptures:
+		1:
+			name: "entity.tja"
+		2:
+			name: "keyword.operator.assignment.tja"
+	patterns: [
+		include: "#metaFloat"
+	]
+,
+	# Metadata with integer value
+	begin: "^(SCOREMODE|SIDE(?=:\\s*\\d)|LIFE)(:)"
+	end: "^"
+	beginCaptures:
+		1:
+			name: "entity.tja"
+		2:
+			name: "keyword.operator.assignment.tja"
+	patterns: [
+		include: "#metaInteger"
+	]
+,
+	# Metadata with string value
+	match: "^(TITLE(?:JA|EN|CN|TW|KO)?|SUBTITLE(?:JA|EN|CN|TW|KO)|WAVE|GENRE|MAKER|LYRICS|SIDE|GAME|BGIMAGE|BGMOVIE)(:)\\s*(.*?)\\s*(?=$|//)"
+	captures:
+		1:
+			name: "entity.tja"
+		2:
+			name: "keyword.operator.assignment.tja"
+		3:
+			name: "string.tja"
+,
+	# Subtitle metadata
+	match: "^(SUBTITLE)(:--|:\\+\\+|:)\\s*(.*?)\\s*(?=$|//)"
+	captures:
+		1:
+			name: "entity.tja"
+		2:
+			name: "keyword.operator.assignment.tja"
+		3:
+			name: "string.tja"
+,
+	# Taikowebskin metadata
+	begin: "^(TAIKOWEBSKIN)(:)"
+	end: "^"
+	beginCaptures:
+		1:
+			name: "entity.tja"
+		2:
+			name: "keyword.operator.assignment.tja"
+	patterns: [
+		include: "#comment"
+	,
+		match: "(?<=:|,)\\s*(dir|name|song|stage|don)(\\s+.*?|)(?=$|,)"
+		captures:
+			1:
+				name: "keyword.tja"
+			2:
+				name: "string.tja"
+	,
+		name: "punctuation.separator.array.tja"
+		match: ","
+	]
+,
+	# Course metadata with integer value
+	begin: "^((?:COURSE|STYLE)(?=:\\s*\\d)|LEVEL|SCOREDIFF|TOTAL|HIDDENBRANCH)(:)"
+	end: "^"
+	beginCaptures:
+		1:
+			name: "keyword.tja"
+		2:
+			name: "keyword.operator.assignment.tja"
+	patterns: [
+		include: "#metaInteger"
+	]
+,
+	# Course metadata with string value
+	match: "^(COURSE|STYLE|EXAM[1-3]|GAUGEINCR)(:)\\s*(.*?)\\s*(?=$|//)"
+	captures:
+		1:
+			name: "keyword.tja"
+		2:
+			name: "keyword.operator.assignment.tja"
+		3:
+			name: "string.tja"
+,
+	# Course metadata with integer list value
+	begin: "^(BALLOON|SCOREINIT)(:)"
+	end: "^"
+	beginCaptures:
+		1:
+			name: "keyword.tja"
+		2:
+			name: "keyword.operator.assignment.tja"
+	patterns: [
+		include: "#comment"
+	,
+		name: "constant.numeric.decimal.tja"
+		match: "(?<=:|,)\\s*(\\d+)\\s*(?=$|,)"
+	,
+		name: "punctuation.separator.array.tja"
+		match: ","
+	]
+,
+	# Commands outside of the notation
+	match: "^(#)(BMSCROLL|HBSCROLL)\\s*(?=$|//)"
+	captures:
+		1:
+			name: "keyword.operator.tja"
+		2:
+			name: "entity.name.type.tja"
+,
+	# Notation
+	name: "notation-outer.tja"
+	begin: "^(#)(START)(?:\\s+(P1|P2))?\\s*(?=$|//)"
+	end: "^(#)(END)\\s*(?=$|//)"
+	beginCaptures:
+		1:
+			name: "keyword.operator.tja"
+		2:
+			name: "entity.name.type.tja"
+		3:
+			name: "string.tja"
+	endCaptures:
+		1:
+			name: "keyword.operator.tja"
+		2:
+			name: "entity.name.type.tja"
+	patterns: [
+		include: "#comment"
+	,
+		# Highlight go go time
+		name: "meta.line.exit.logfile.gogotime.tja"
+		begin: "^(#)(GOGOSTART)\\s*(?=$|//)"
+		end: "^(#)(GOGOEND)\\s*(?=$|//)|(?=#(?:END|N|E|M)\\b)"
+		beginCaptures:
+			1:
+				name: "keyword.operator.tja"
+			2:
+				name: "entity.name.type.tja"
+			3:
+				name: "string.tja"
+		endCaptures:
+			1:
+				name: "keyword.operator.tja"
+			2:
+				name: "entity.name.type.tja"
+		patterns: [
+			include: "#comment"
+		,
+			include: "#command"
+		,
+			include: "#note"
+		]
+	,
+		include: "#command"
+	,
+		include: "#note"
+	]
+]
+repository:
+	comment:
+		# Comment
+		name: "comment"
+		match: "//.*$"
+	metaFloat:
+		patterns: [
+			include: "#comment"
+		,
+			name: "constant.numeric.decimal.tja"
+			match: """(?x)
+				# Preceded by a colon character
+				(?<=:)\\s*(
+					# Number -1, 0.1
+					-?\\d+(?:\\.\\d+)?|
+					# Number .1
+					-?\\.\\d+
+				# Ends with a new line or comment
+				)\\s*(?=$|//)
+			"""
+		]
+	metaInteger:
+		patterns: [
+			include: "#comment"
+		,
+			name: "constant.numeric.decimal.tja"
+			# : 1
+			match: "(?<=:)\\s*\\d+\\s*(?=$|//)"
+		]
+	commandFloat:
+		patterns: [
+			include: "#comment"
+		,
+			name: "constant.numeric.decimal.tja"
+			match: """(?x)
+				\\s+(
+					# Number -1, 0.1
+					-?\\d+(?:\\.\\d+)?|
+					# Number .1
+					-?\\.\\d+
+				# Ends with a new line or comment
+				)\\s*(?=$|//)
+			"""
+		]
+	command:
+		patterns: [
+			# Command with fraction value
+			match: "^(#)(MEASURE)\\b(.*)(?=$|//)"
+			captures:
+				1:
+					name: "keyword.operator.tja"
+				2:
+					name: "entity.name.type.tja"
+				3:
+					patterns: [
+						match: "\\s+(\\d+)\\s*(?:(/)\\s*(\\d*))?\\s*(?=$|//)"
+						captures:
+							1:
+								name: "constant.numeric.decimal.tja"
+							2:
+								name: "keyword.operator.tja"
+							3:
+								name: "constant.numeric.decimal.tja"
+					]
+		,
+			# Command with float value
+			match: "^(#)(BPMCHANGE|DELAY|SCROLL)\\b(.*)(?=$|//)"
+			captures:
+				1:
+					name: "keyword.operator.tja"
+				2:
+					name: "entity.name.type.tja"
+				3:
+					patterns: [
+						include: "#commandFloat"
+					]
+		,
+			# Command with string and integer list value
+			match: "^(#)(BRANCHSTART|NEXTSONG)\\b(.*)(?=$|//)"
+			captures:
+				1:
+					name: "keyword.operator.tja"
+				2:
+					name: "entity.name.type.tja"
+				3:
+					patterns: [
+						name: "constant.numeric.decimal.tja"
+						match: "\\s*(\\d+)\\s*(?=$|,)"
+					,
+						name: "punctuation.separator.array.tja"
+						match: ","
+					,
+						name: "string.tja"
+						match: "\\s*(\\w+)\\s*(?=$|,)"
+					]
+		,
+			# Command with integer space-separated list value
+			match: "^(#)(SENOTECHANGE|SUDDEN|JPOSSCROLL)\\b(.*)(?=$|//)"
+			captures:
+				1:
+					name: "keyword.operator.tja"
+				2:
+					name: "entity.name.type.tja"
+				3:
+					patterns: [
+						name: "constant.numeric.decimal.tja"
+						match: "\\s+(\\d+)\\b"
+					]
+		,
+			# Command with string value
+			match: "^(#)(LYRIC)(?:\\s+(.*?))?\\s*(?=$|//)"
+			captures:
+				1:
+					name: "keyword.operator.tja"
+				2:
+					name: "entity.name.type.tja"
+				3:
+					name: "string.tja"
+					patterns: [
+						match: "\\\\n"
+						captures:
+							0:
+								name: "constant.character.escape.backslash.tja"
+					]
+		,
+			match: "^(#)(GOGOSTART|BARLINEOFF|BARLINEON|N|E|M|BRANCHEND|SECTION|LEVELHOLD|DIRECTION)\\s*(?=$|//)"
+			captures:
+				1:
+					name: "keyword.operator.tja"
+				2:
+					name: "entity.name.type.tja"
+		]
+	note:
+		# Notes
+		patterns: [
+			include: "#noteGroup1"
+		,
+			include: "#noteGroup2"
+		]
+	noteGroup1:
+		name: "notation.tja"
+		match: "(?i)^([\\dABF]*,)\\s*(?=$|//)"
+		captures:
+			0:
+				patterns: [
+					include: "#noteTypes"
+				]
+	noteGroup2:
+		begin: "(?i)^([\\dABF]+)\\s*(?=$|//)"
+		end: "(?i)^([\\dABF]*,)\\s*(?=$|//)"
+		captures:
+			0:
+				patterns: [
+					include: "#noteTypes"
+				]
+		patterns: [
+			include: "#comment"
+		,
+			include: "#noteTypes"
+		,
+			include: "#command"
+		]
+	noteTypes:
+		patterns: [
+			# Blank note
+			name: "grow.tja"
+			match: "0"
+			captures:
+				0:
+					name: "comment.note.blank.tja"
+		,
+			# Don
+			name: "grow.tja"
+			match: "[1Ff]"
+			captures:
+				0:
+					name: "constant.numeric.decimal.note.don.tja"
+		,
+			# Ka
+			name: "grow.tja"
+			match: "2"
+			captures:
+				0:
+					name: "keyword.note.ka.tja"
+		,
+			# DON
+			name: "grow.tja"
+			match: "[3Aa]"
+			captures:
+				0:
+					name: "constant.numeric.decimal.note.big.don.tja"
+		,
+			# KA
+			name: "grow.tja"
+			match: "[4Bb]"
+			captures:
+				0:
+					name: "keyword.note.big.ka.tja"
+		,
+			# Drumroll
+			name: "grow.tja"
+			match: "5"
+			captures:
+				0:
+					name: "entity.note.drumroll.tja"
+		,
+			# DRUMROLL
+			name: "grow.tja"
+			match: "6"
+			captures:
+				0:
+					name: "entity.note.big.drumroll.tja"
+		,
+			# Balloon
+			name: "grow.tja"
+			match: "7"
+			captures:
+				0:
+					name: "entity.note.balloon.tja"
+		,
+			# Drumroll and balloon end
+			name: "grow.tja"
+			match: "8"
+			captures:
+				0:
+					name: "entity.note.drumroll-end.tja"
+		,
+			# Kusudama
+			name: "grow.tja"
+			match: "9"
+			captures:
+				0:
+					name: "entity.note.big.balloon.tja"
+		,
+			# Measure end
+			name: "punctuation.separator.delimiter.measure.tja"
+			match: ","
+		]
