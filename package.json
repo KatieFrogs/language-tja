@@ -1,7 +1,7 @@
 {
 	"name": "language-tja",
 	"main": "./lib/language-tja",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "TJA language syntax for Taiko no Tatsujin charts",
 	"keywords": [
 		"language",
